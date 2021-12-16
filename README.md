@@ -61,3 +61,6 @@ You need to copy the system images to your ACR not to use Vienna Global ACR and 
 ### Prepare your images in your ACR for training/inferencing
 
 You need to prepare your images for training and inferencing because our Vienna Global ACR does not support DLP. See [this doc](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-train-with-custom-image).
+
+## Frequently Asked Questions
+To be updated.
