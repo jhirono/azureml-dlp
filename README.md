@@ -1,7 +1,7 @@
 # Azure Machine Learning Data Loss Prevention (Private Preview)
 
 ## Enable Your Subscription for Private Preview
-Submit [this form]() to allowlist your subscription(s).
+Submit [this form](https://forms.office.com/r/1TraBek7LV) to allowlist your subscription(s).
 
 ## What is Data Loss Prevention (DLP)?
 
@@ -19,7 +19,7 @@ With this private preview, we can support DLP with training and inferencing. How
 
 ## Workaround for the Training Experience (#1)
 
-At first, do not forget to submit [this form](). We need to allowlist your subscription(s), which will take a week.
+At first, do not forget to submit [this form](https://forms.office.com/r/1TraBek7LV). We need to allowlist your subscription(s), which will take a week.
 
 ### Inbound Configurations
 * Allow the inbound from service tag "Azure Machine Learning"
@@ -37,7 +37,7 @@ Note that the inbound from service tag "Batch node management" is not required a
 * Destination port 443 to region.batch.azure.com, region.service.batch.com.
 * Destination port 443 over TCP to *.blob.core.windows.net (SEP will narrow it down in the later step.)
 
-#### Service Endpoint Policy Configuration
+### Service Endpoint Policy Configuration
 
 We use [service endpoint policy](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoint-policies-overview) to narrow down the target storage accounts of the outbound to storage.region/*.blob.core.windows.net.
 
@@ -48,11 +48,16 @@ We use [service endpoint policy](https://docs.microsoft.com/en-us/azure/virtual-
 If you do not have storage private endpoints for Azure Machine Learning Vnet, you need to do the following.
 * Add your storage accounts in your service endpoint policy that you want to allow access from your compute. At least, you need to add the default storage account attached to your AzureML workspace.
 
-#### Run the script to copy the system images from Vienna Global ACR to your ACR attached to AzureML
+### Run the script to copy the system images from Vienna Global ACR to your ACR attached to AzureML
 
 You need to copy the system images to your ACR not to use Vienna Global ACR and use these copied images for training job submission. Note that this is for the AzureML internal job submission process, and you need to have your docker images to build your environment for your training.
 
 * Run this script (To be provided) and make copies of system images to your ACR.
 * Add below two lines when you submit your training job.
   * myenv.environment_variables['AZUREML_COMPUTE_USE_COMMON_RUNTIME'] = 'true'
-  * myenv.environment_variables['AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE'] = "{\"c
+  * myenv.environment_variables['AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE'] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"<<user acr name>>.azurecr.io\", \"username\": \"<<ACR Admin Username>>\", \"password\": \"<<ACR Admin Key>>\"},\"regional_tag_prefix\": false}}"
+    * Note that you need to replace ACR name, Admin Username and Admin Key.
+
+### Prepare your images in your ACR for training/inferencing
+
+You need to prepare your images for training and inferencing because our Vienna Global ACR does not support DLP. See [this doc](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-train-with-custom-image).
