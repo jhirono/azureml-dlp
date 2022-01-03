@@ -52,7 +52,11 @@ If you do not have storage private endpoints for Azure Machine Learning Vnet, yo
 
 You need to copy the system images to your ACR not to use Vienna Global ACR and use these copied images for training job submission. Note that this is for the AzureML internal job submission process, and you need to have your docker images to build your environment for your training.
 
-* Run this script (To be provided) and make copies of system images to your ACR.
+* Run [this script](import_acr.py) and make copies of system images to your ACR.
+  * pip install azureml-core~=1.37 azure-cli~=2.18
+  * az login
+  * az acr login -n myregistry
+  * python import_acr.py -w myworkspace -a myregistry -wsg myrg -crg myrg -s mysubscriptionid
 * Add below two lines when you submit your training job.
   * myenv.environment_variables['AZUREML_COMPUTE_USE_COMMON_RUNTIME'] = 'true'
   * myenv.environment_variables['AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE'] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"<<user acr name>>.azurecr.io\", \"username\": \"<<ACR Admin Username>>\", \"password\": \"<<ACR Admin Key>>\"},\"regional_tag_prefix\": false}}"
