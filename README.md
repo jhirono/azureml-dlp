@@ -44,7 +44,7 @@ Note that the inbound from service tag "Batch node management" is not required a
 We use [service endpoint policy](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoint-policies-overview) to narrow down the target storage accounts of the outbound to storage.region/*.blob.core.windows.net.
 
 * Enable the storage service endpoint of your subnet has your compute
-* Create a service endpoint policy with **/services/Azure/MachineLearning** alias.
+* Create a service endpoint policy with **/services/Azure/MachineLearning** alias and your AzureML default storage account. At least one stroage account registration is required for a service endpoint policy.
 * Attach your service endpoint policy to your subnet has your compute.
 
 If you do not have storage private endpoints for Azure Machine Learning Vnet, you need to do the following.
