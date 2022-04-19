@@ -1,7 +1,9 @@
 # Azure Machine Learning Data Loss Prevention (Private Preview)
 
 ## Enable Your Subscription for Private Preview
-Submit [this form](https://forms.office.com/r/1TraBek7LV) to allowlist your subscription(s).
+Submit [this form](https://forms.office.com/r/1TraBek7LV) to allowlist your subscription(s). 
+
+**We need your batch account for this private preview. Create a workspace and an compute instance before submitting a form if you have never done that with your subscription. You can delete resources immediately.**
 
 **Please note that you need the outbound to BatchNodeManagement.region to use your compute instance and cluster after the allowlisting. Please configure it when you submit this form.**
 
