@@ -7,7 +7,7 @@ Submit [this form](https://forms.office.com/r/1TraBek7LV) to allowlist your subs
 
 **Please note that you need the outbound to BatchNodeManagement.region to use your compute instance and cluster after the allowlisting. Please configure it when you submit this form.**
 
-**Current DLP does not support No Public IP compute instnace and No Public IP compute cluster. **
+**Current DLP does not support No Public IP compute instnace and No Public IP compute cluster.**
 
 ## What is Data Loss Prevention (DLP)?
 
