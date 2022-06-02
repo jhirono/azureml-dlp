@@ -54,20 +54,23 @@ We use [service endpoint policy](https://docs.microsoft.com/en-us/azure/virtual-
 If you do not have storage private endpoints for Azure Machine Learning Vnet, you need to do the following.
 * Add your storage accounts in your service endpoint policy that you want to allow access from your compute. At least, you need to add the default storage account attached to your AzureML workspace.
 
-### Run the script to copy the system images from Vienna Global ACR to your ACR attached to AzureML
+### Add a command to submit a job ~~Run the script to copy the system images from Vienna Global ACR to your ACR attached to AzureML~~
+**As of June 1st**, you do not need to copy images from vienna global to your local ACR. You just need to have a below command for your job submissions.
 
-You need to copy the system images to your ACR not to use Vienna Global ACR and use these copied images for training job submission. Note that this is for the AzureML internal job submission process, and you need to have your docker images to build your environment for your training.
+config.run_config.environment_variables["AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE"] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"mcr.microsoft.com\"}, \"repo_prefix\": \"azureml/runtime\", \"regional_tag_prefix\": false}}"
 
-* Run [this script](import_acr.py) and make copies of system images to your ACR.
-  * pip install azureml-core~=1.37 azure-cli~=2.18
-  * az login
-  * az acr login -n myregistry
-  * python import_acr.py -w myworkspace -a myregistry -wsg myrg -crg myrg -s mysubscriptionid
-* Add below two lines when you submit your training job.
-  * myenv.environment_variables['AZUREML_COMPUTE_USE_COMMON_RUNTIME'] = 'true'
-  * myenv.environment_variables['AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE'] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"<<user acr name>>.azurecr.io\", \"username\": \"<<ACR Admin Username>>\", \"password\": \"<<ACR Admin Key>>\"},\"regional_tag_prefix\": false}}"
-    * Note that you need to replace ACR name, Admin Username and Admin Key.
+~~You need to copy the system images to your ACR not to use Vienna Global ACR and use these copied images for training job submission. Note that this is for the AzureML internal job submission process, and you need to have your docker images to build your environment for your training.~~
 
+~~* Run [this script](import_acr.py) and make copies of system images to your ACR.~~
+  ~~* pip install azureml-core~=1.37 azure-cli~=2.18~~
+  ~~* az login~~
+  ~~* az acr login -n myregistry~~
+  ~~* python import_acr.py -w myworkspace -a myregistry -wsg myrg -crg myrg -s mysubscriptionid~~
+~~* Add below two lines when you submit your training job.~~
+  ~~* myenv.environment_variables['AZUREML_COMPUTE_USE_COMMON_RUNTIME'] = 'true'~~
+  ~~* myenv.environment_variables['AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE'] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"<<user acr name>>.azurecr.io\", \"username\": \"<<ACR Admin Username>>\", \"password\": \"<<ACR Admin Key>>\"},\"regional_tag_prefix\": false}}"~~
+    ~~* Note that you need to replace ACR name, Admin Username and Admin Key.~~ 
+ 
 ### Prepare your images in your ACR for training/inferencing
 
 You need to prepare your images for training and inferencing because our Vienna Global ACR does not support DLP. See [this doc](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-train-with-custom-image).
