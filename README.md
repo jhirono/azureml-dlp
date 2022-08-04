@@ -1,34 +1,25 @@
-# Azure Machine Learning Data Loss Prevention (Private Preview)
-
-## Enable Your Subscription for Private Preview
-Submit [this form](https://forms.office.com/r/1TraBek7LV) to allowlist your subscription(s). 
-
-**We need your batch account for this private preview. Create a workspace and an compute instance before submitting a form if you have never done that with your subscription. You can delete resources immediately.**
-
-**Please note that you need the outbound to BatchNodeManagement.region to use your compute instance and cluster after the allowlisting. Please configure it when you submit this form.**
-
-**Current DLP does not support No Public IP compute instnace and No Public IP compute cluster.**
+# Azure Machine Learning Data Loss Prevention (Preview)
 
 ## What is Data Loss Prevention (DLP)?
 
-AzureML has an outbound dependency to storage.reigon/*.blob.core.windows.net. This configuration increases the risk of allowing malicious users to move the data from your virtual network to other storage accounts in the same region.
+AzureML has an outbound dependency to storage.reigon/*.blob.core.windows.net. This configuration increases the risk of allowing malicious users to move the data from your virtual network to other storage accounts in the same region. Current preview is for removing its dependency.
 
-## What is supported, What is not supported in Private Preview
+**No Public IP Compute Instance and Compute Cluster does not support DLP.**
 
-With this private preview, we can support DLP with training and inferencing. However, all scenarios are not supported, which use Vienna Global ACR.
+## Steps to use DLP
 
-|Scenarios|Status
-|---|---|
-|1. Training Experience using Python SDK on Compute Instance, Compute Cluster, Integrated Notebook on UX|Supported with the workaround described below|---|
-|2. Inferencing Experience using AKS, ArcAKS| Supported w/o workaround |
-|3. AutoML UX, Designer UX, Cureated Environment use Vienna Global ACR (ACR managed by Microsoft) | Not Supported|
+## Example Architecture
+![](./images/dlpsamplearchitecture.png)
 
-## Workaround for the Training Experience (#1)
+## 1. Enable Your Subscription for Opt-in Preview
+Submit [this form](https://forms.office.com/r/1TraBek7LV) to allowlist your subscription(s). Microsoft will contact with you when its allowlisting is finished.
 
-At first, do not forget to submit [this form](https://forms.office.com/r/1TraBek7LV). We need to allowlist your subscription(s), which will take a week.
+**We need your batch account for this preview. Create a workspace and an compute instance before submitting a form if you have never done that with your subscription. You can delete resources immediately.**
+
+## 2. Change You Inbound and Outbound Configurations
 
 ### Inbound Configurations
-* Allow the inbound from service tag "Azure Machine Learning"
+* Allow the inbound from service tag "Azure Machine Learning" (No Change)
 * If you use a firewall, you need to configure UDR to make inbound communication skip your firewall. See [this doc](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-secure-training-vnet?tabs=azure-studio%2Cipaddress#inbound-traffic).
 
 Note that the inbound from service tag "Batch node management" is not required anymore.
@@ -41,7 +32,7 @@ Note that the inbound from service tag "Batch node management" is not required a
 
 #### FW Case
 * Destination port 443 to region.batch.azure.com, region.service.batch.com.
-* Destination port 443 over TCP to *.blob.core.windows.net (SEP will narrow it down in the later step.)
+* Destination port 443 over TCP to *.blob.core.windows.net, *.queue.core.windows.net, *.table.core.windows.net (SEP will narrow it down in the later step.)
 
 ### Service Endpoint Policy Configuration
 
@@ -54,26 +45,11 @@ We use [service endpoint policy](https://docs.microsoft.com/en-us/azure/virtual-
 If you do not have storage private endpoints for Azure Machine Learning Vnet, you need to do the following.
 * Add your storage accounts in your service endpoint policy that you want to allow access from your compute. At least, you need to add the default storage account attached to your AzureML workspace.
 
-### Add a command to submit a job ~~Run the script to copy the system images from Vienna Global ACR to your ACR attached to AzureML~~
-**As of June 1st**, you do not need to copy images from vienna global to your local ACR. You just need to have a below command for your job submissions.
+## Curated Environments
+If you use curated enviornments, please make sure using the latest one and it is on Microsoft Container Registry. If the link under Azure contaier registry is mcr.microsoft.com/*, you are good to go. If the link is viennaglobal.azurecr.io/*, you cannot use it with DLP. That curated environment is on the deprecation path, or on the migration to MCR.
 
-config.run_config.environment_variables["AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE"] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"mcr.microsoft.com\"}, \"repo_prefix\": \"azureml/runtime\", \"regional_tag_prefix\": false}}"
+![curated env example](./images/curatedenv.png)
 
-~~You need to copy the system images to your ACR not to use Vienna Global ACR and use these copied images for training job submission. Note that this is for the AzureML internal job submission process, and you need to have your docker images to build your environment for your training.~~
-
-~~* Run [this script](import_acr.py) and make copies of system images to your ACR.~~
-  ~~* pip install azureml-core~=1.37 azure-cli~=2.18~~
-  ~~* az login~~
-  ~~* az acr login -n myregistry~~
-  ~~* python import_acr.py -w myworkspace -a myregistry -wsg myrg -crg myrg -s mysubscriptionid~~
-~~* Add below two lines when you submit your training job.~~
-  ~~* myenv.environment_variables['AZUREML_COMPUTE_USE_COMMON_RUNTIME'] = 'true'~~
-  ~~* myenv.environment_variables['AZUREML_CR_BOOTSTRAPPER_CONFIG_OVERRIDE'] = "{\"capabilities_registry\": {\"registry\": {\"url\": \"<<user acr name>>.azurecr.io\", \"username\": \"<<ACR Admin Username>>\", \"password\": \"<<ACR Admin Key>>\"},\"regional_tag_prefix\": false}}"~~
-    ~~* Note that you need to replace ACR name, Admin Username and Admin Key.~~ 
- 
-### Prepare your images in your ACR for training/inferencing
-
-You need to prepare your images for training and inferencing because our Vienna Global ACR does not support DLP. See [this doc](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-train-with-custom-image).
 
 ## Frequently Asked Questions
 To be updated.
