@@ -50,6 +50,10 @@ If you use curated enviornments, please make sure using the latest one and it is
 
 ![curated env example](./images/curatedenv.png)
 
+## References
+* [Configure inbound and outbound network traffic](https://docs.microsoft.com/azure/machine-learning/how-to-access-azureml-behind-firewall)
+* [Batch Simplified Node Communicaiton](https://docs.microsoft.com/azure/batch/simplified-compute-node-communication)
+
 
 ## Frequently Asked Questions
 To be updated.
